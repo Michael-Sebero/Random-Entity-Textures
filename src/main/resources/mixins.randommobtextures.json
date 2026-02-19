@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "michaelsebero.randommobtextures.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "mixins.randommobtextures.refmap.json",
+  "mixins": [],
+  "client": [
+    "EntityMixin",
+    "RenderManagerMixin",
+    "TextureManagerMixin"
+  ],
+  "minVersion": "0.7.10"
+}

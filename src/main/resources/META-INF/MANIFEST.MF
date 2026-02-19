@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+FMLCorePlugin: michaelsebero.randommobtextures.core.RandomMobsCore
+FMLCorePluginContainsFMLMod: true
+ForceLoadAsMod: true
+MixinConfigs: mixins.randommobtextures.json

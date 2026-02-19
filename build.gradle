@@ -1,0 +1,91 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven { url = "http://files.minecraftforge.net/maven" }
+        maven { url = "https://repo.spongepowered.org/maven" }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+    }
+}
+apply plugin: 'net.minecraftforge.gradle.forge'
+
+version = "V1"
+group = "michaelsebero.randommobtextures"
+archivesBaseName = "random-mob-textures"
+
+sourceCompatibility = targetCompatibility = '1.8'
+compileJava {
+    sourceCompatibility = targetCompatibility = '1.8'
+}
+
+minecraft {
+    version = "1.12.2-14.23.4.2705"
+    runDir = "run"
+    mappings = "snapshot_20171003"
+
+    clientJvmArgs += ["-Dfml.coreMods.load=michaelsebero.randommobtextures.core.RandomMobsCore"]
+    serverJvmArgs += ["-Dfml.coreMods.load=michaelsebero.randommobtextures.core.RandomMobsCore"]
+}
+
+repositories {
+    maven { url = "https://repo.spongepowered.org/maven" }
+}
+
+dependencies {
+    compile("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
+        exclude module: 'launchwrapper'
+        exclude module: 'guava'
+        exclude module: 'gson'
+        exclude module: 'commons-io'
+        exclude module: 'log4j-core'
+    }
+}
+
+// ── Mixin annotation-processor wiring ────────────────────────────────────────
+// We configure the AP manually rather than using the MixinGradle plugin because
+// the standalone MixinGradle 0.6 conflicts with ForgeGradle 2.3's own internal
+// mixin wiring, producing a duplicate-refmap error.
+//
+// No reobfJar / extraSrgFile block is needed here. That is only required when
+// mixins generate new synthetic accessor or invoker bridge methods that must be
+// remapped during reobfuscation. This mod uses only @Inject, @ModifyArg, and
+// @Unique, none of which produce entries in the mixin SRG output.
+afterEvaluate {
+    def refmapFile = new File(sourceSets.main.output.resourcesDir,
+                              'mixins.randommobtextures.refmap.json')
+
+    compileJava {
+        doFirst { refmapFile.parentFile.mkdirs() }
+        options.compilerArgs += [
+            "-AreobfSrgFile=${tasks.genSrgs.mcpToSrg}",
+            "-AoutRefMapFile=${refmapFile}"
+        ]
+    }
+}
+
+jar {
+    manifest {
+        attributes(
+            "FMLCorePlugin":               "michaelsebero.randommobtextures.core.RandomMobsCore",
+            "FMLCorePluginContainsFMLMod": "true",
+            "MixinConfigs":                "mixins.randommobtextures.json",
+            "TweakClass":                  "org.spongepowered.asm.launch.MixinTweaker",
+            "TweakOrder":                  "0"
+        )
+    }
+}
+
+processResources {
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+        expand 'version':project.version, 'mcversion':project.minecraft.version
+    }
+
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+}

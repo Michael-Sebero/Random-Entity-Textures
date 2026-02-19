@@ -1,0 +1,69 @@
+This mapping 'snapshot_20171003' was designed for MC 1.12! Use at your own peril.This mapping 'snapshot_20171003' was designed for MC 1.12! Use at your own peril.
+
+WARNING: You are using an unsupported version of ForgeGradle.
+Please consider upgrading to ForgeGradle 5 and helping in the efforts to get old versions working on the modern toolchain.
+See https://gist.github.com/TheCurle/fe7ad3ede188cbdd15c235cc75d52d4a for more info on contributing.
+#################################################
+         ForgeGradle 2.3.4-gfc67182        
+  https://github.com/MinecraftForge/ForgeGradle  
+#################################################
+                 Powered by MCP                  
+             http://modcoderpack.com             
+     by: Searge, ProfMobius, R4wk, ZeuX          
+     Fesh0r, IngisKahn, bspkrs, LexManos         
+#################################################
+Version string 'V1' does not match SemVer specification 
+You should try SemVer : http://semver.org/
+:clean UP-TO-DATE
+:deobfCompileDummyTask
+:deobfProvidedDummyTask
+:sourceApiJava
+:compileApiJava UP-TO-DATE
+:processApiResources UP-TO-DATE
+:apiClasses UP-TO-DATE
+:sourceMainJava
+:compileJavaNote: SpongePowered MIXIN Annotation Processor Version=0.7.11
+Note: ObfuscationServiceMCP supports type: "searge"
+Note: ObfuscationServiceMCP supports type: "notch"
+/home/user/Files/GitHub/Random-Mob-Textures/build/sources/main/java/michaelsebero/randommobtextures/mixin/RenderManagerMixin.java:44: warning: Cannot find target method for @Inject in net.minecraft.client.renderer.entity.RenderLivingBase
+    @Inject(
+    ^
+/home/user/Files/GitHub/Random-Mob-Textures/build/sources/main/java/michaelsebero/randommobtextures/mixin/RenderManagerMixin.java:54: warning: Cannot find target method for @Inject in net.minecraft.client.renderer.entity.RenderLivingBase
+    @Inject(
+    ^
+/home/user/Files/GitHub/Random-Mob-Textures/build/sources/main/java/michaelsebero/randommobtextures/mixin/TextureManagerMixin.java:39: warning: Cannot find target method for @ModifyVariable in net.minecraft.client.renderer.texture.TextureManager
+    @ModifyVariable(
+    ^
+Note: Writing refmap to /home/user/Files/GitHub/Random-Mob-Textures/build/resources/main/mixins.randommobtextures.refmap.json
+Note: Writing refmap to /home/user/Files/GitHub/Random-Mob-Textures/build/resources/main/mixins.randommobtextures.refmap.json
+Note: Writing refmap to /home/user/Files/GitHub/Random-Mob-Textures/build/resources/main/mixins.randommobtextures.refmap.json
+Note: Writing refmap to /home/user/Files/GitHub/Random-Mob-Textures/build/resources/main/mixins.randommobtextures.refmap.json
+3 warnings
+
+:processResources
+:classes
+:jar
+:sourceTestJava
+:compileTestJava UP-TO-DATE
+:processTestResources UP-TO-DATE
+:testClasses UP-TO-DATE
+:test UP-TO-DATE
+:extractMcpData SKIPPED
+:extractMcpMappings SKIPPED
+:getVersionJson
+:extractUserdev UP-TO-DATE
+:genSrgs SKIPPED
+:reobfJar
+:extractAnnotationsJar
+:extractRangemapReplacedMain
+/home/user/Files/GitHub/Random-Mob-Textures/build/sources/main/java
+:retromapReplacedMain
+remapping source...
+:sourceJar
+:assemble
+:check UP-TO-DATE
+:build
+
+BUILD SUCCESSFUL
+
+Total time: 3.422 secs
