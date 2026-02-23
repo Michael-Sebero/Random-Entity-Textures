@@ -1,8 +1,8 @@
 {
   "required": true,
-  "package": "michaelsebero.randommobtextures.mixin",
+  "package": "michaelsebero.randomentitytextures.mixin",
   "compatibilityLevel": "JAVA_8",
-  "refmap": "mixins.randommobtextures.refmap.json",
+  "refmap": "mixins.randomentitytextures.refmap.json",
   "mixins": [],
   "client": [
     "EntityMixin",

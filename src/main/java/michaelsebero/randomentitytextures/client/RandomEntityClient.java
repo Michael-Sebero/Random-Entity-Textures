@@ -1,6 +1,6 @@
-package michaelsebero.randommobtextures.client;
+package michaelsebero.randomentitytextures.client;
 
-import michaelsebero.randommobtextures.RandomMobsMod;
+import michaelsebero.randomentitytextures.RandomEntityMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.ResourceLocation;
@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Core engine for Random Mob Textures.
+ * Core engine for Random Entity Textures.
  *
  * Entity tracking is maintained by RenderManagerMixin which injects into
  * RenderLivingBase.doRender (func_76986_a):
@@ -23,7 +23,7 @@ import java.util.Properties;
  * TextureManagerMixin intercepts every TextureManager.bindTexture call and,
  * while currentEntity is non-null, redirects to a variant texture.
  */
-public final class RandomMobsClient {
+public final class RandomEntityClient {
 
     // ── Rendering state ───────────────────────────────────────────────────────
 
@@ -41,13 +41,13 @@ public final class RandomMobsClient {
         "_fur", "_invulnerable", "_angry", "_tame", "_collar"
     };
 
-    private static final Map<String, RmProperties> CACHE = new HashMap<>();
+    private static final Map<String, RetProperties> CACHE = new HashMap<>();
 
     // Sentinel: stored when a path has no variants so we never re-scan it.
     // Must be compared with == (identity), never .equals().
-    private static final RmProperties NO_VARIANTS = new RmProperties((ResourceLocation[]) null);
+    private static final RetProperties NO_VARIANTS = new RetProperties((ResourceLocation[]) null);
 
-    private RandomMobsClient() {}
+    private RandomEntityClient() {}
 
     // ── State machine callbacks (called by RenderManagerMixin) ────────────────
 
@@ -71,7 +71,7 @@ public final class RandomMobsClient {
         // If this fires but currentEntity is never a TrackedEntity, EntityMixin
         // is not being applied — check your mixins JSON lists EntityMixin.
         if (!(currentEntity instanceof TrackedEntity)) {
-            RandomMobsMod.LOG.warn("RandomMobs: currentEntity is not a TrackedEntity ({}). " +
+            RandomEntityMod.LOG.warn("RandomEntityTextures: currentEntity is not a TrackedEntity ({}). " +
                 "Verify that EntityMixin is registered in your mixins JSON.",
                 currentEntity.getClass().getName());
             return original;
@@ -84,18 +84,18 @@ public final class RandomMobsClient {
         }
 
         // Cache lookup / build
-        RmProperties props = CACHE.get(path);
+        RetProperties props = CACHE.get(path);
         if (props == null) {
             props = buildProperties(original);
             if (props != null) {
-                RandomMobsMod.LOG.info("RandomMobs: loaded variants for {}", path);
+                RandomEntityMod.LOG.info("RandomEntityTextures: loaded variants for {}", path);
                 CACHE.put(path, props);
             } else {
                 // No variants found in the resource pack for this texture.
                 // This is normal for textures that have no numbered variants or
                 // .properties file. Check that your pack puts files under
                 // assets/<domain>/mcpatcher/mob/ (e.g. mcpatcher/mob/zombie/zombie2.png).
-                RandomMobsMod.LOG.debug("RandomMobs: no variants found for {} — " +
+                RandomEntityMod.LOG.debug("RandomEntityTextures: no variants found for {} — " +
                     "pack may not have mcpatcher/mob/ variants for this mob.", path);
                 CACHE.put(path, NO_VARIANTS);
             }
@@ -111,12 +111,12 @@ public final class RandomMobsClient {
 
     public static void clearCache() {
         CACHE.clear();
-        RandomMobsMod.LOG.info("RandomMobs: texture variant cache cleared.");
+        RandomEntityMod.LOG.info("RandomEntityTextures: texture variant cache cleared.");
     }
 
     // ── Properties building ───────────────────────────────────────────────────
 
-    private static RmProperties buildProperties(ResourceLocation textureLoc) {
+    private static RetProperties buildProperties(ResourceLocation textureLoc) {
         ResourceLocation mcpLoc = toMcpatcherLocation(textureLoc);
         if (mcpLoc == null) return null;
 
@@ -125,7 +125,7 @@ public final class RandomMobsClient {
         if (propsFile != null) {
             Properties raw = loadProperties(propsFile);
             if (raw != null) {
-                RmProperties result = new RmProperties(raw, textureLoc);
+                RetProperties result = new RetProperties(raw, textureLoc);
                 if (result.isValid()) return result;
             }
         }
@@ -133,7 +133,7 @@ public final class RandomMobsClient {
         // Fall back to auto-detected numbered variants.
         ResourceLocation[] variants = autoDetectVariants(textureLoc, mcpLoc);
         if (variants != null) {
-            return new RmProperties(variants);
+            return new RetProperties(variants);
         }
 
         return null;
@@ -187,7 +187,7 @@ public final class RandomMobsClient {
 
         if (list.size() <= 1) return null;
 
-        RandomMobsMod.LOG.info("RandomMobs: {} — {} variants auto-detected",
+        RandomEntityMod.LOG.info("RandomEntityTextures: {} — {} variants auto-detected",
             original.getResourcePath(), list.size());
         return list.toArray(new ResourceLocation[0]);
     }
@@ -227,7 +227,7 @@ public final class RandomMobsClient {
                 .getResource(loc).getInputStream());
             return props;
         } catch (IOException e) {
-            RandomMobsMod.LOG.warn("RandomMobs: could not read properties file: {}", loc);
+            RandomEntityMod.LOG.warn("RandomEntityTextures: could not read properties file: {}", loc);
             return null;
         }
     }

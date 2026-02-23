@@ -1,6 +1,6 @@
-package michaelsebero.randommobtextures.mixin;
+package michaelsebero.randomentitytextures.mixin;
 
-import michaelsebero.randommobtextures.client.TrackedEntity;
+import michaelsebero.randomentitytextures.client.TrackedEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;

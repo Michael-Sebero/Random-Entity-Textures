@@ -1,4 +1,4 @@
-package michaelsebero.randommobtextures.core;
+package michaelsebero.randomentitytextures.core;
 
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 
@@ -6,7 +6,7 @@ import java.util.Map;
 
 @IFMLLoadingPlugin.MCVersion("1.12.2")
 @IFMLLoadingPlugin.SortingIndex(Integer.MAX_VALUE - 10)
-public class RandomMobsCore implements IFMLLoadingPlugin {
+public class RandomEntityCore implements IFMLLoadingPlugin {
 
     @Override
     public String[] getASMTransformerClass() {

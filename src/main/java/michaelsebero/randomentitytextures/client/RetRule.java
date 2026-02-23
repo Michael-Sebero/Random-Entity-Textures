@@ -1,10 +1,10 @@
-package michaelsebero.randommobtextures.client;
+package michaelsebero.randomentitytextures.client;
 
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
 
 /**
- * Represents a single numbered rule block from a mob .properties file, e.g.:
+ * Represents a single numbered rule block from an entity .properties file, e.g.:
  *
  *   skins.1   = 1-4 6
  *   weights.1 = 10 10 10 10 2
@@ -14,7 +14,7 @@ import net.minecraft.world.biome.Biome;
  * A rule matches an entity when ALL specified constraints (biome, height) are
  * satisfied. If no constraints are set the rule always matches.
  */
-public final class RmRule {
+public final class RetRule {
 
     private final ResourceLocation[] textures;
     private final int[] cumWeights;
@@ -25,10 +25,10 @@ public final class RmRule {
 
     // ── Construction ──────────────────────────────────────────────────────────
 
-    RmRule(ResourceLocation[] textures,
-           int[] cumWeights, int totalWeight,
-           Biome[] biomes,
-           int minHeight, int maxHeight) {
+    RetRule(ResourceLocation[] textures,
+            int[] cumWeights, int totalWeight,
+            Biome[] biomes,
+            int minHeight, int maxHeight) {
         this.textures    = textures;
         this.cumWeights  = cumWeights;
         this.totalWeight = totalWeight;

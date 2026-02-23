@@ -1,10 +1,10 @@
-package michaelsebero.randommobtextures.client;
+package michaelsebero.randomentitytextures.client;
 
 import net.minecraft.world.biome.Biome;
 
 /**
  * Mixed into {@link net.minecraft.entity.Entity} by
- * {@link michaelsebero.randommobtextures.mixin.EntityMixin}.
+ * {@link michaelsebero.randomentitytextures.mixin.EntityMixin}.
  *
  * Provides the values needed for texture-variant selection, all lazily
  * captured the first time any accessor is called (i.e. the first time the

@@ -6,13 +6,18 @@ buildscript {
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        // Shadow plugin — bundles Mixin classes into the output jar.
+        // 1.2.4 is the last release that supports Gradle 2.x (ForgeGradle 2.3
+        // locks the wrapper to Gradle 2.14; Shadow 2.x requires Gradle 3+).
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.4'
     }
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'com.github.johnrengelman.shadow'
 
 version = "V1"
-group = "michaelsebero.randommobtextures"
-archivesBaseName = "random-mob-textures"
+group = "michaelsebero.randomentitytextures"
+archivesBaseName = "random-entity-textures"
 
 sourceCompatibility = targetCompatibility = '1.8'
 compileJava {
@@ -24,16 +29,23 @@ minecraft {
     runDir = "run"
     mappings = "snapshot_20171003"
 
-    clientJvmArgs += ["-Dfml.coreMods.load=michaelsebero.randommobtextures.core.RandomMobsCore"]
-    serverJvmArgs += ["-Dfml.coreMods.load=michaelsebero.randommobtextures.core.RandomMobsCore"]
+    clientJvmArgs += ["-Dfml.coreMods.load=michaelsebero.randomentitytextures.core.RandomEntityCore"]
+    serverJvmArgs += ["-Dfml.coreMods.load=michaelsebero.randomentitytextures.core.RandomEntityCore"]
 }
 
 repositories {
     maven { url = "https://repo.spongepowered.org/maven" }
 }
 
+configurations {
+    // 'shadow' dependencies get compiled against AND embedded into the jar.
+    // They are also added to 'compile' automatically via extendsFrom.
+    shadow
+    compile.extendsFrom shadow
+}
+
 dependencies {
-    compile("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
+    shadow("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
         exclude module: 'launchwrapper'
         exclude module: 'guava'
         exclude module: 'gson'
@@ -43,37 +55,72 @@ dependencies {
 }
 
 // ── Mixin annotation-processor wiring ────────────────────────────────────────
-// We configure the AP manually rather than using the MixinGradle plugin because
-// the standalone MixinGradle 0.6 conflicts with ForgeGradle 2.3's own internal
-// mixin wiring, producing a duplicate-refmap error.
-//
-// No reobfJar / extraSrgFile block is needed here. That is only required when
-// mixins generate new synthetic accessor or invoker bridge methods that must be
-// remapped during reobfuscation. This mod uses only @Inject, @ModifyArg, and
-// @Unique, none of which produce entries in the mixin SRG output.
 afterEvaluate {
     def refmapFile = new File(sourceSets.main.output.resourcesDir,
-                              'mixins.randommobtextures.refmap.json')
+                              'mixins.randomentitytextures.refmap.json')
 
     compileJava {
         doFirst { refmapFile.parentFile.mkdirs() }
         options.compilerArgs += [
             "-AreobfSrgFile=${tasks.genSrgs.mcpToSrg}",
-            "-AoutRefMapFile=${refmapFile}"
+            "-AoutRefMapFile=${refmapFile}",
+            "-nowarn"
         ]
     }
 }
 
-jar {
+// ── Shadow jar configuration ──────────────────────────────────────────────────
+shadowJar {
+    // Embed only the 'shadow' configuration (Mixin), not all of 'compile'.
+    configurations = [project.configurations.shadow]
+
+    // Relocate the internal Mixin implementation to avoid classpath collisions.
+    // The 'launch' and 'service' sub-packages MUST keep their original names:
+    // LaunchWrapper looks up TweakClass by the literal string in the manifest,
+    // and the Mixin ServiceLoader entries need stable names for FML to find them.
+    relocate 'org.spongepowered.asm.mixin',      'michaelsebero.randomentitytextures.shadow.mixin'
+    relocate 'org.spongepowered.asm.obfuscation', 'michaelsebero.randomentitytextures.shadow.obfuscation'
+    relocate 'org.spongepowered.asm.util',        'michaelsebero.randomentitytextures.shadow.util'
+    relocate 'org.spongepowered.asm.transform',   'michaelsebero.randomentitytextures.shadow.transform'
+
+    // Merge META-INF/services so Mixin's ServiceLoader entries survive merging.
+    mergeServiceFiles()
+
+    // Drop the '-all' classifier so Forge treats this as the primary mod jar.
+    classifier = ''
+
     manifest {
         attributes(
-            "FMLCorePlugin":               "michaelsebero.randommobtextures.core.RandomMobsCore",
+            "FMLCorePlugin":               "michaelsebero.randomentitytextures.core.RandomEntityCore",
             "FMLCorePluginContainsFMLMod": "true",
-            "MixinConfigs":                "mixins.randommobtextures.json",
+            "MixinConfigs":                "mixins.randomentitytextures.json",
             "TweakClass":                  "org.spongepowered.asm.launch.MixinTweaker",
             "TweakOrder":                  "0"
         )
     }
+}
+
+// ── Reobfuscation ─────────────────────────────────────────────────────────────
+// Tell ForgeGradle to reobfuscate the shadow jar (not the plain jar).
+reobf {
+    shadowJar { mappingType = 'SEARGE' }
+}
+
+// Attach the shadow jar as the primary artifact so 'gradle build' produces it.
+artifacts {
+    archives shadowJar
+}
+
+// Disable the plain jar so there is only one output artifact.
+jar.enabled = false
+
+// ForgeGradle 2.3 always creates reobfJar and adds it to the build graph.
+// With jar.enabled = false the plain jar file never exists, so reobfJar fails.
+// Disable it and wire the shadow jar's reobf task in its place.
+afterEvaluate {
+    reobfJar.enabled = false
+    extractAnnotationsJar.enabled = false
+    build.dependsOn reobfShadowJar
 }
 
 processResources {

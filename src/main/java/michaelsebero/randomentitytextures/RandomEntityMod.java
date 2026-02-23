@@ -1,6 +1,6 @@
-package michaelsebero.randommobtextures;
+package michaelsebero.randomentitytextures;
 
-import michaelsebero.randommobtextures.client.RandomMobsClient;
+import michaelsebero.randomentitytextures.client.RandomEntityClient;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -10,22 +10,22 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Mod(
-    modid            = RandomMobsMod.MODID,
-    name             = "Random Mob Textures",
-    version          = RandomMobsMod.VERSION,
+    modid            = RandomEntityMod.MODID,
+    name             = "Random Entity Textures",
+    version          = RandomEntityMod.VERSION,
     clientSideOnly   = true,
     acceptedMinecraftVersions = "[1.12,1.13)"
 )
-@Mod.EventBusSubscriber(modid = RandomMobsMod.MODID, value = Side.CLIENT)
-public class RandomMobsMod {
+@Mod.EventBusSubscriber(modid = RandomEntityMod.MODID, value = Side.CLIENT)
+public class RandomEntityMod {
 
-    public static final String MODID   = "randommobtextures";
+    public static final String MODID   = "randomentitytextures";
     public static final String VERSION = "1.0.0";
     public static final Logger LOG     = LogManager.getLogger(MODID);
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        LOG.info("Random Mob Textures initialising.");
+        LOG.info("Random Entity Textures initialising.");
     }
 
     // ── Cache invalidation ────────────────────────────────────────────────────
@@ -47,6 +47,6 @@ public class RandomMobsMod {
 
     @SubscribeEvent
     public static void onTextureStitch(TextureStitchEvent.Post event) {
-        RandomMobsClient.clearCache();
+        RandomEntityClient.clearCache();
     }
 }

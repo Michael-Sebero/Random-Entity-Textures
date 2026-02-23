@@ -1,6 +1,6 @@
-package michaelsebero.randommobtextures.mixin;
+package michaelsebero.randomentitytextures.mixin;
 
-import michaelsebero.randommobtextures.client.RandomMobsClient;
+import michaelsebero.randomentitytextures.client.RandomEntityClient;
 import net.minecraft.client.renderer.entity.RenderLivingBase;
 import net.minecraft.entity.EntityLivingBase;
 import org.spongepowered.asm.mixin.Mixin;
@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
  * Sets and clears the "currently rendering entity" state in
- * {@link RandomMobsClient} by injecting into {@link RenderLivingBase#doRender}.
+ * {@link RandomEntityClient} by injecting into {@link RenderLivingBase#doRender}.
  *
  * This is the direct equivalent of what OptiFine does: OptiFine patches
  * RenderManager.renderEntitySimple via ASM to set/clear
@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * bindEntityTexture / TextureManager.bindTexture are called).
  *
  * WHY THIS REPLACES THE FORGE-EVENT APPROACH:
- *   RandomMobsMod previously used @Mod.EventBusSubscriber with
+ *   RandomEntityMod previously used @Mod.EventBusSubscriber with
  *   RenderLivingEvent.Pre/Post to set currentEntity. That approach has a
  *   subtle but fatal flaw under ForgeGradle 2.3: @Mod.EventBusSubscriber
  *   scans the class for @SubscribeEvent methods after class-load-time ASM
@@ -46,9 +46,9 @@ public abstract class RenderManagerMixin {
         at = @At("HEAD"),
         remap = false
     )
-    private void randommobs$beginRender(EntityLivingBase entity, double x, double y, double z,
-                                         float yaw, float partialTicks, CallbackInfo ci) {
-        RandomMobsClient.nextEntity(entity);
+    private void randomentity$beginRender(EntityLivingBase entity, double x, double y, double z,
+                                           float yaw, float partialTicks, CallbackInfo ci) {
+        RandomEntityClient.nextEntity(entity);
     }
 
     @Inject(
@@ -56,8 +56,8 @@ public abstract class RenderManagerMixin {
         at = @At("RETURN"),
         remap = false
     )
-    private void randommobs$endRender(EntityLivingBase entity, double x, double y, double z,
-                                       float yaw, float partialTicks, CallbackInfo ci) {
-        RandomMobsClient.nextEntity(null);
+    private void randomentity$endRender(EntityLivingBase entity, double x, double y, double z,
+                                         float yaw, float partialTicks, CallbackInfo ci) {
+        RandomEntityClient.nextEntity(null);
     }
 }

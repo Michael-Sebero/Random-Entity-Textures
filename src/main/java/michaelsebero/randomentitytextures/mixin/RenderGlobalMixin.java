@@ -1,10 +1,10 @@
-package michaelsebero.randommobtextures.mixin;
+package michaelsebero.randomentitytextures.mixin;
 
 import net.minecraft.client.renderer.RenderGlobal;
 import org.spongepowered.asm.mixin.Mixin;
 
 /**
- * Retained as an empty stub so the entry in mixins.randommobtextures.json
+ * Retained as an empty stub so the entry in mixins.randomentitytextures.json
  * does not need to change (removing a registered mixin class can cause
  * startup errors in some Mixin 0.7.x builds).
  *

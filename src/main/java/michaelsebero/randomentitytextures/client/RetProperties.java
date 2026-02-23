@@ -1,6 +1,6 @@
-package michaelsebero.randommobtextures.client;
+package michaelsebero.randomentitytextures.client;
 
-import michaelsebero.randommobtextures.RandomMobsMod;
+import michaelsebero.randomentitytextures.RandomEntityMod;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
 
@@ -9,15 +9,15 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * Holds the compiled texture-variant data for a single mob texture path.
- * Created once (lazily) and cached by {@link RandomMobsClient}.
+ * Holds the compiled texture-variant data for a single entity texture path.
+ * Created once (lazily) and cached by {@link RandomEntityClient}.
  *
  * Two modes:
  *   Rule mode      - parsed from a .properties file; supports biome /
  *                    height filtering and weighted selection.
  *   Variant list   - auto-detected numbered textures with no extra constraints.
  */
-public final class RmProperties {
+public final class RetProperties {
 
     // ── Fields ────────────────────────────────────────────────────────────────
 
@@ -25,18 +25,18 @@ public final class RmProperties {
     private final ResourceLocation[] variants;
 
     /** Non-null only in rule mode. */
-    private final RmRule[] rules;
+    private final RetRule[] rules;
 
     // ── Constructors ──────────────────────────────────────────────────────────
 
     /** Variant-list mode: no .properties file, just numbered textures. */
-    RmProperties(ResourceLocation[] variants) {
+    RetProperties(ResourceLocation[] variants) {
         this.variants = variants;
         this.rules    = null;
     }
 
     /** Rule mode: parses the given {@link Properties} object. */
-    RmProperties(Properties props, ResourceLocation baseTexture) {
+    RetProperties(Properties props, ResourceLocation baseTexture) {
         this.variants = null;
         this.rules    = parseRules(props, baseTexture);
     }
@@ -45,7 +45,7 @@ public final class RmProperties {
 
     public boolean isValid() {
         if (rules != null) {
-            for (RmRule r : rules) if (!r.isValid()) return false;
+            for (RetRule r : rules) if (!r.isValid()) return false;
             return rules.length > 0;
         }
         return variants != null && variants.length > 0;
@@ -53,7 +53,7 @@ public final class RmProperties {
 
     public ResourceLocation getTexture(ResourceLocation original, TrackedEntity entity) {
         if (rules != null) {
-            for (RmRule rule : rules) {
+            for (RetRule rule : rules) {
                 if (rule.matches(entity)) {
                     ResourceLocation result = rule.getTexture(entity);
                     if (result != null) return result;
@@ -68,8 +68,8 @@ public final class RmProperties {
 
     // ── Rule parsing ──────────────────────────────────────────────────────────
 
-    private static RmRule[] parseRules(Properties props, ResourceLocation baseTexture) {
-        List<RmRule> list = new ArrayList<>();
+    private static RetRule[] parseRules(Properties props, ResourceLocation baseTexture) {
+        List<RetRule> list = new ArrayList<>();
 
         int propCount = props.size();
         for (int n = 1; n <= propCount + 1; n++) {
@@ -101,16 +101,16 @@ public final class RmProperties {
             int minH = (heightRange != null) ? heightRange[0] : Integer.MIN_VALUE;
             int maxH = (heightRange != null) ? heightRange[1] : Integer.MAX_VALUE;
 
-            list.add(new RmRule(textures, cumWeights, totalWeight, biomes, minH, maxH));
+            list.add(new RetRule(textures, cumWeights, totalWeight, biomes, minH, maxH));
         }
 
-        return list.toArray(new RmRule[0]);
+        return list.toArray(new RetRule[0]);
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private static ResourceLocation[] buildTextureArray(ResourceLocation baseTexture, int[] skinIndices) {
-        ResourceLocation mcpBase = RandomMobsClient.toMcpatcherLocation(baseTexture);
+        ResourceLocation mcpBase = RandomEntityClient.toMcpatcherLocation(baseTexture);
 
         List<ResourceLocation> out = new ArrayList<>();
         for (int idx : skinIndices) {
@@ -119,12 +119,12 @@ public final class RmProperties {
                 loc = baseTexture;
             } else {
                 if (mcpBase == null) { loc = baseTexture; }
-                else                 { loc = RandomMobsClient.getIndexedLocation(mcpBase, idx); }
+                else                 { loc = RandomEntityClient.getIndexedLocation(mcpBase, idx); }
             }
             if (loc == null) continue;
 
-            if (idx > 1 && !RandomMobsClient.hasResource(loc)) {
-                RandomMobsMod.LOG.warn("RandomMobs: texture not found: {}", loc.getResourcePath());
+            if (idx > 1 && !RandomEntityClient.hasResource(loc)) {
+                RandomEntityMod.LOG.warn("RandomEntityTextures: texture not found: {}", loc.getResourcePath());
                 continue;
             }
             out.add(loc);
@@ -173,7 +173,7 @@ public final class RmProperties {
                 }
             }
             if (!found) {
-                RandomMobsMod.LOG.warn("RandomMobs: unknown biome name '{}' in properties file", name);
+                RandomEntityMod.LOG.warn("RandomEntityTextures: unknown biome name '{}' in properties file", name);
             }
         }
         return biomes.isEmpty() ? null : biomes.toArray(new Biome[0]);

@@ -1,6 +1,6 @@
-package michaelsebero.randommobtextures.mixin;
+package michaelsebero.randomentitytextures.mixin;
 
-import michaelsebero.randommobtextures.client.RandomMobsClient;
+import michaelsebero.randomentitytextures.client.RandomEntityClient;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
@@ -42,10 +42,10 @@ public abstract class TextureManagerMixin {
         index = 1,
         remap = false
     )
-    private ResourceLocation randommobs$replaceTexture(ResourceLocation original) {
-        if (!RandomMobsClient.isRenderingEntities()) {
+    private ResourceLocation randomentity$replaceTexture(ResourceLocation original) {
+        if (!RandomEntityClient.isRenderingEntities()) {
             return original;
         }
-        return RandomMobsClient.getVariantTexture(original);
+        return RandomEntityClient.getVariantTexture(original);
     }
 }
