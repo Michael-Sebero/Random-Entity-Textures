@@ -6,9 +6,6 @@ buildscript {
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
-        // Shadow plugin — bundles Mixin classes into the output jar.
-        // 1.2.4 is the last release that supports Gradle 2.x (ForgeGradle 2.3
-        // locks the wrapper to Gradle 2.14; Shadow 2.x requires Gradle 3+).
         classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.4'
     }
 }
@@ -37,15 +34,11 @@ repositories {
     maven { url = "https://repo.spongepowered.org/maven" }
 }
 
-configurations {
-    // 'shadow' dependencies get compiled against AND embedded into the jar.
-    // They are also added to 'compile' automatically via extendsFrom.
-    shadow
-    compile.extendsFrom shadow
-}
-
 dependencies {
-    shadow("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
+    // Mixin is provided at runtime by MixinBooter.
+    // compileOnly puts it on the compile classpath (for annotation types and
+    // the annotation processor) without embedding or relocating it in the jar.
+    compileOnly("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
         exclude module: 'launchwrapper'
         exclude module: 'guava'
         exclude module: 'gson'
@@ -70,21 +63,10 @@ afterEvaluate {
 }
 
 // ── Shadow jar configuration ──────────────────────────────────────────────────
+// Nothing is embedded — Mixin is provided by MixinBooter at runtime.
+// Shadow is used only to set the manifest and control the output classifier.
 shadowJar {
-    // Embed only the 'shadow' configuration (Mixin), not all of 'compile'.
-    configurations = [project.configurations.shadow]
-
-    // Relocate the internal Mixin implementation to avoid classpath collisions.
-    // The 'launch' and 'service' sub-packages MUST keep their original names:
-    // LaunchWrapper looks up TweakClass by the literal string in the manifest,
-    // and the Mixin ServiceLoader entries need stable names for FML to find them.
-    relocate 'org.spongepowered.asm.mixin',      'michaelsebero.randomentitytextures.shadow.mixin'
-    relocate 'org.spongepowered.asm.obfuscation', 'michaelsebero.randomentitytextures.shadow.obfuscation'
-    relocate 'org.spongepowered.asm.util',        'michaelsebero.randomentitytextures.shadow.util'
-    relocate 'org.spongepowered.asm.transform',   'michaelsebero.randomentitytextures.shadow.transform'
-
-    // Merge META-INF/services so Mixin's ServiceLoader entries survive merging.
-    mergeServiceFiles()
+    configurations = []
 
     // Drop the '-all' classifier so Forge treats this as the primary mod jar.
     classifier = ''

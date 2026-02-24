@@ -30,7 +30,7 @@ import org.spongepowered.asm.mixin.Unique;
  *   At runtime, after Mixin application, 'this' IS the Entity, so the cast
  *   never throws ClassCastException.
  */
-@Mixin(Entity.class)
+@Mixin(targets = "net.minecraft.entity.Entity")
 public abstract class EntityMixin implements TrackedEntity {
 
     @Unique private boolean mcp$init       = false;

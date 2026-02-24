@@ -1,7 +1,6 @@
 package michaelsebero.randomentitytextures.mixin;
 
 import michaelsebero.randomentitytextures.client.RandomEntityClient;
-import net.minecraft.client.renderer.entity.RenderLivingBase;
 import net.minecraft.entity.EntityLivingBase;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -38,7 +37,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  *   remap = false bypasses the refmap entirely and targets the method directly
  *   by its runtime SRG name and descriptor, which is stable and guaranteed.
  */
-@Mixin(RenderLivingBase.class)
+@Mixin(targets = "net.minecraft.client.renderer.entity.RenderLivingBase")
 public abstract class RenderManagerMixin {
 
     @Inject(

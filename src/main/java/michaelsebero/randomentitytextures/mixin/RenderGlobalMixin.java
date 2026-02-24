@@ -1,6 +1,5 @@
 package michaelsebero.randomentitytextures.mixin;
 
-import net.minecraft.client.renderer.RenderGlobal;
 import org.spongepowered.asm.mixin.Mixin;
 
 /**
@@ -11,7 +10,7 @@ import org.spongepowered.asm.mixin.Mixin;
  * Entity tracking was moved to RenderManagerMixin (now targeting
  * RenderLivingBase.doRender). See that class for details.
  */
-@Mixin(RenderGlobal.class)
+@Mixin(targets = "net.minecraft.client.renderer.RenderGlobal")
 public abstract class RenderGlobalMixin {
     // No injections.
 }

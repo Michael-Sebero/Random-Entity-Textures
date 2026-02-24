@@ -1,7 +1,6 @@
 package michaelsebero.randomentitytextures.mixin;
 
 import michaelsebero.randomentitytextures.client.RandomEntityClient;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -33,7 +32,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
  *   arg), others keep it as the LVT index. Removing argsOnly and using the
  *   raw LVT index = 1 is unambiguous across all versions.
  */
-@Mixin(value = TextureManager.class, priority = 800)
+@Mixin(targets = "net.minecraft.client.renderer.texture.TextureManager", priority = 800)
 public abstract class TextureManagerMixin {
 
     @ModifyVariable(
